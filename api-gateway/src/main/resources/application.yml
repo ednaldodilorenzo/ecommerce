@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: catalog-service-route
+              uri: lb://catalog-service
+              predicates:
+                - Path=/catalog/**
+              filters:
+                - StripPrefix=1
+                - AddRequestHeader=X-Gateway-Request, True
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka/
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG

@@ -1,0 +1,20 @@
+FROM eclipse-temurin:25-jdk-jammy
+
+WORKDIR /workspace
+
+COPY gradlew .
+COPY gradle gradle
+COPY settings.gradle.kts .
+COPY build.gradle.kts .
+COPY gradle.properties .
+
+COPY api-gateway/build.gradle.kts api-gateway/build.gradle.kts
+COPY catalog-service/build.gradle.kts catalog-service/build.gradle.kts
+COPY discovery-server/build.gradle.kts discovery-server/build.gradle.kts
+
+RUN chmod +x gradlew
+RUN ./gradlew :discovery-server:dependencies --no-daemon
+
+COPY ./discovery-server ./discovery-server
+
+CMD ["./gradlew", ":discovery-server:bootRun", "-PskipDownload=true", "--no-daemon"]
