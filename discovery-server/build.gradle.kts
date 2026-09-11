@@ -1,13 +1,8 @@
-plugins {
-    java
-    id("org.springframework.boot")
-}
+import org.springframework.boot.gradle.tasks.bundling.BootJar
 
-group = "br.com.d2s.ecommerce.discoveryserver"
-version = "0.0.1-SNAPSHOT"
 
-repositories {
-    mavenCentral()
+tasks.named<BootJar>("bootJar") {
+    archiveFileName.set("discovery-server.jar")
 }
 
 val springCloudVersion = providers.gradleProperty("springCloudVersion").get()

@@ -13,9 +13,9 @@ spring:
             - id: catalog-service-route
               uri: lb://catalog-service
               predicates:
-                - Path=/catalog/**
+                - Path=/api/catalog/**
               filters:
-                - StripPrefix=1
+                - StripPrefix=2
                 - AddRequestHeader=X-Gateway-Request, True
 eureka:
   client:
