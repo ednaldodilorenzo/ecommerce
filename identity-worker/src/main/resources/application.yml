@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: identity-worker
+
+  main:
+    web-application-type: none
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+
+    consumer:
+      group-id: identity-provisioning
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+    listener:
+      ack-mode: record
+
+keycloak:
+  admin:
+    base-url: ${KEYCLOAK_BASE_URL:http://keycloak:8180}
+    realm: ${KEYCLOAK_REALM:ecommerce}
+    client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:identity-worker}
+    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:UUAwybO1higVjQJ98uG0doVR9DGg9iFF}

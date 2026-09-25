@@ -17,6 +17,14 @@ spring:
               filters:
                 - StripPrefix=2
                 - AddRequestHeader=X-Gateway-Request, True
+
+            - id: customer-service-route
+              uri: lb://customer-service
+              predicates:
+                - Path=/api/customer/**
+              filters:
+                - StripPrefix=2
+                - AddRequestHeader=X-Gateway-Request, True
 eureka:
   client:
     service-url:

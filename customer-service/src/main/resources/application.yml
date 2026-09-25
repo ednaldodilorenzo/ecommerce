@@ -1,0 +1,37 @@
+server:
+  port: 8082
+
+keycloak:
+  admin:
+    base-url: ${KEYCLOAK_BASE_URL:http://keycloak:8080}
+    realm: ${KEYCLOAK_REALM:ecommerce}
+    client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:customer-service-admin}
+    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:UUAwybO1higVjQJ98uG0doVR9DGg9iFF}
+
+spring:
+  application:
+    name: customer-service
+  devtools:
+    restart:
+      enabled: true
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    default-schema: public
+  kafka:
+    bootstrap-servers: kafka:9092
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+      acks: all
+
+      properties:
+        enable.idempotence: true
+        retry.backoff.ms: 1000
+        delivery.timeout.ms: 120000
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka/

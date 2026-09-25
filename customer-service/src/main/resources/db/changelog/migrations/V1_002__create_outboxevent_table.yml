@@ -1,0 +1,61 @@
+databaseChangeLog:
+  - changeSet:
+      id: V1_002
+      author: Ednaldo Dilorenzo
+      changes:
+        - createTable:
+            tableName: outbox_event
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: aggregate_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: aggregate_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: event_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: topic
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: event_key
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payload
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(15)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+              - column:
+                  name: published_date
+                  type: TIMESTAMP
+              - column:
+                  name: retry_count
+                  type: INT
+                  constraints:
+                    nullable: false

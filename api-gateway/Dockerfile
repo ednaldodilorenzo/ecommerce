@@ -11,6 +11,7 @@ COPY gradle.properties .
 COPY api-gateway/build.gradle.kts api-gateway/build.gradle.kts
 COPY catalog-service/build.gradle.kts catalog-service/build.gradle.kts
 COPY discovery-server/build.gradle.kts discovery-server/build.gradle.kts
+COPY customer-service/build.gradle.kts customer-service/build.gradle.kts
 
 RUN chmod +x gradlew
 #RUN ./gradlew :api-gateway:dependencies --no-daemon
