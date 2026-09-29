@@ -12,6 +12,8 @@ COPY api-gateway/build.gradle.kts api-gateway/build.gradle.kts
 COPY catalog-service/build.gradle.kts catalog-service/build.gradle.kts
 COPY discovery-server/build.gradle.kts discovery-server/build.gradle.kts
 COPY customer-service/build.gradle.kts customer-service/build.gradle.kts
+COPY service-comons/build.gradle.kts service-comons/build.gradle.kts
+COPY identity-worker/build.gradle.kts identity-worker/build.gradle.kts
 
 RUN chmod +x gradlew
 

@@ -14,7 +14,8 @@ spring:
       enable-auto-commit: false
 
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      #value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
 
     listener:
       ack-mode: record
@@ -24,4 +25,4 @@ keycloak:
     base-url: ${KEYCLOAK_BASE_URL:http://keycloak:8180}
     realm: ${KEYCLOAK_REALM:ecommerce}
     client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:identity-worker}
-    client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:UUAwybO1higVjQJ98uG0doVR9DGg9iFF}
+    client-secret: EN2o9JG2TFWL7HCBP3G1dYZQI9djP0Fp

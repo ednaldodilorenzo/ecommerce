@@ -16,6 +16,8 @@ dependencyManagement {
 }
 
 dependencies {
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-server")
 }
 

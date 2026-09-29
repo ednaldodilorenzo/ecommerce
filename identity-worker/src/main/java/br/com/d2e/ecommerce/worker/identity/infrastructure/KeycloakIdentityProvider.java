@@ -26,36 +26,10 @@ public class KeycloakIdentityProvider {
 
     public Optional<UUID> findByCustomerId(UUID customerId) {
         String accessToken = obtainAccessToken();
-        List<KeycloakUserResponse> users = restClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/admin/realms/{realm}/users")
-                        .queryParam(
-                                "q",
-                                CUSTOMER_ID_ATTRIBUTE + ":" + customerId
-                        )
-                        .queryParam("briefRepresentation", false)
-                        .queryParam("max", 2)
-                        .build(properties.realm())
-                )
-                .headers(headers ->
-                        headers.setBearerAuth(accessToken)
-                )
-                .retrieve()
-                .body(
-                        new ParameterizedTypeReference<
-                                                        List<KeycloakUserResponse>
-                                                        >() {
-                        }
-                );
+        List<KeycloakUserResponse> users = restClient.get().uri(uriBuilder -> uriBuilder.path("/admin/realms/{realm}/users").queryParam("q", CUSTOMER_ID_ATTRIBUTE + ":" + customerId).queryParam("briefRepresentation", false).queryParam("max", 2).build(properties.realm())).headers(headers -> headers.setBearerAuth(accessToken)).retrieve().body(new ParameterizedTypeReference<List<KeycloakUserResponse>>() {
+        });
 
-        List<KeycloakUserResponse> exactMatches =
-                Optional.ofNullable(users)
-                        .orElseGet(Collections::emptyList)
-                        .stream()
-                        .filter(user ->
-                                containsCustomerId(user, customerId)
-                        )
-                        .toList();
+        List<KeycloakUserResponse> exactMatches = Optional.ofNullable(users).orElseGet(Collections::emptyList).stream().filter(user -> containsCustomerId(user, customerId)).toList();
 
         if (exactMatches.isEmpty()) {
             return Optional.empty();
@@ -70,34 +44,25 @@ public class KeycloakIdentityProvider {
 //            );
         }
 
-        return Optional.of(
-                UUID.fromString(exactMatches.getFirst().id())
-        );
+        return Optional.of(UUID.fromString(exactMatches.getFirst().id()));
     }
 
-    private boolean containsCustomerId(
-            KeycloakUserResponse user,
-            UUID customerId
-    ) {
+    private boolean containsCustomerId(KeycloakUserResponse user, UUID customerId) {
         if (user.attributes() == null) {
             return false;
         }
 
-        List<String> values = user.attributes()
-                .getOrDefault(
-                        CUSTOMER_ID_ATTRIBUTE,
-                        Collections.emptyList()
-                );
+        List<String> values = user.attributes().getOrDefault(CUSTOMER_ID_ATTRIBUTE, Collections.emptyList());
 
-        return values.stream()
-                .filter(Objects::nonNull)
-                .anyMatch(customerId.toString()::equals);
+        return values.stream().filter(Objects::nonNull).anyMatch(customerId.toString()::equals);
     }
 
-    public UUID createIdentity(String email, String password, String firstName, String lastName) {
+    public UUID createIdentity(UUID customerId, String email, String password, String firstName, String lastName) {
         String accessToken = obtainAccessToken();
 
-        var request = new KeycloakCreateUserRequest(email, email, firstName, lastName, true, false, List.of(new KeycloakCredential("password", password, false)));
+        var request = new KeycloakCreateUserRequest(email, email, firstName, lastName, true, false,
+                List.of(new KeycloakCredential("password", password, false)), Map.of(CUSTOMER_ID_ATTRIBUTE,
+                List.of(customerId.toString())));
 
         URI location = restClient.post().uri("/admin/realms/{realm}/users", properties.realm()).contentType(MediaType.APPLICATION_JSON).headers(headers -> headers.setBearerAuth(accessToken)).body(request).retrieve().toBodilessEntity().getHeaders().getLocation();
 
@@ -113,6 +78,9 @@ public class KeycloakIdentityProvider {
 
     private String obtainAccessToken() {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        IO.println("Client id:" + properties.clientId());
+        IO.println("Client secret: " + properties.clientSecret());
+        IO.println("Client realm:" + properties.realm());
 
         form.add("grant_type", "client_credentials");
         form.add("client_id", properties.clientId());

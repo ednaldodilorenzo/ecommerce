@@ -1,11 +1,11 @@
 package br.com.d2s.service.customer.service;
 
+import br.com.d2s.ecommerce.commons.event.CustomerRegistrationRequested;
 import br.com.d2s.ecommerce.commons.event.EcommerceEvent;
 import br.com.d2s.ecommerce.commons.event.EcommerceTopic;
 import br.com.d2s.ecommerce.commons.exception.APIException;
 import br.com.d2s.ecommerce.commons.exception.APIExceptionType;
 import br.com.d2s.service.customer.dao.CustomerDao;
-import br.com.d2s.service.customer.dto.CustomerCreatedEvent;
 import br.com.d2s.service.customer.dto.PostUserDto;
 import br.com.d2s.service.customer.infrastructure.identity.KeycloakIdentityProvider;
 import br.com.d2s.service.customer.model.User;
@@ -34,8 +34,8 @@ public class CustomerServiceImpl implements CustomerService {
         user.setUserRegistrationStatus(UserRegistrationStatus.PENDING);
         customerDao.save(user);
 
-        var customerCreatedEvent = new CustomerCreatedEvent(user.getId(), user.getName(), user.getEmail());
+        var customerCreatedEvent = new CustomerRegistrationRequested(user.getId(), user.getEmail(), user.getName());
 
-        outboxEventService.addEvent(user.getId(), "Customer", EcommerceEvent.CUSTOMER_REGISTRATION_REQUESTED.getValue(), EcommerceTopic.CUSTOMER_REGISTRATION, customerCreatedEvent);
+        outboxEventService.addEvent(user.getId(), "Customer", EcommerceEvent.CUSTOMER_REGISTRATION_REQUESTED.getValue(), EcommerceTopic.CUSTOMER_REGISTRATION_REQUESTED, customerCreatedEvent);
     }
 }

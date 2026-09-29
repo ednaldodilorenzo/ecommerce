@@ -1,7 +1,7 @@
 package br.com.d2s.service.customer.service;
 
+import br.com.d2s.ecommerce.commons.event.EventEnvelope;
 import br.com.d2s.service.customer.dao.OutboxEventDao;
-import br.com.d2s.service.customer.dto.EventEnvelope;
 import br.com.d2s.service.customer.model.OutboxEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,7 +25,7 @@ public class OutboxEventServiceImpl implements OutboxEventService {
         var envelope = new EventEnvelope<>(eventId, eventType, aggregateId, Instant.now(), data);
         try {
             var payload = objectMapper.writeValueAsString(envelope);
-
+            IO.println("Payload de saída: " + payload);
             var outboxEvent = new OutboxEvent(eventId, aggregateId, aggregateType, eventType, topic,
                     aggregateId.toString(), payload);
 

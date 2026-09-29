@@ -60,6 +60,7 @@ public class OutboxPublisher {
 
     private void publish(OutboxEvent event) {
         try {
+            IO.println("Publishing event: " + event.getPayload());
             kafkaTemplate.send(
                     event.getTopic(),
                     event.getEventKey(),

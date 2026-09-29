@@ -1,0 +1,32 @@
+# Development image shared by every Spring Boot service.
+# Sources are bind-mounted at runtime (see docker-compose.yml); a continuous
+# Gradle build recompiles on change and spring-boot-devtools restarts the app.
+FROM eclipse-temurin:25-jdk-jammy
+
+ARG SERVICE
+ENV SERVICE=${SERVICE}
+
+WORKDIR /workspace
+
+COPY gradlew .
+COPY gradle gradle
+COPY settings.gradle.kts .
+COPY build.gradle.kts .
+COPY gradle.properties .
+
+COPY api-gateway/build.gradle.kts api-gateway/build.gradle.kts
+COPY catalog-service/build.gradle.kts catalog-service/build.gradle.kts
+COPY discovery-server/build.gradle.kts discovery-server/build.gradle.kts
+COPY customer-service/build.gradle.kts customer-service/build.gradle.kts
+COPY service-comons/build.gradle.kts service-comons/build.gradle.kts
+COPY identity-worker/build.gradle.kts identity-worker/build.gradle.kts
+
+RUN chmod +x gradlew
+
+# Warm the Gradle distribution and dependency cache into the image layer.
+RUN ./gradlew ":${SERVICE}:dependencies" --no-daemon -q > /dev/null
+
+COPY docker/dev-entrypoint.sh /usr/local/bin/dev-entrypoint.sh
+RUN chmod +x /usr/local/bin/dev-entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/dev-entrypoint.sh"]

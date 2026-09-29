@@ -9,15 +9,13 @@ dependencyManagement {
 }
 
 dependencies {
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-
     implementation(
         "org.springframework.boot:spring-boot-starter-web"
     )
 
-//    implementation(
-//        "org.springframework.boot:spring-boot-starter-data-jpa"
-//    )
+    implementation(
+        "org.springframework.boot:spring-boot-starter-data-jpa"
+    )
 
     implementation("org.liquibase:liquibase-core")
 
@@ -29,7 +27,18 @@ dependencies {
         "org.springframework.boot:spring-boot-starter-actuator"
     )
 
+    implementation(project(":service-comons"))
+
+    implementation("org.springframework.boot:spring-boot-starter-kafka")
+
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+
+    implementation("org.springframework.boot:spring-boot-starter-restclient")
+
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     runtimeOnly("org.postgresql:postgresql")
 

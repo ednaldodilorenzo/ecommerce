@@ -1,4 +1,25 @@
+x-devtools-env: &devtools-env
+  # Wait for the background Gradle build to settle before restarting
+  SPRING_DEVTOOLS_RESTART_POLL_INTERVAL: 2s
+  SPRING_DEVTOOLS_RESTART_QUIET_PERIOD: 1s
+  SPRING_DEVTOOLS_RESTART_ADDITIONAL_PATHS: /workspace/service-comons/build/libs
+
 services:
+  mailpit:
+    image: axllent/mailpit
+    container_name: mailpit
+    restart: unless-stopped
+    volumes:
+      - ./data:/data
+    ports:
+      - "8025:8025" # Web UI
+      - "1025:1025" # SMTP Port
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: true
+
   kafka:
     image: apache/kafka:4.1.0
     container_name: kafka
@@ -48,13 +69,19 @@ services:
   identity-worker:
     build:
       context: .
-      dockerfile: identity-worker/Dockerfile
+      dockerfile: Dockerfile-dev
+      args:
+        SERVICE: identity-worker
+    volumes:
+      - ./identity-worker/src/main:/workspace/identity-worker/src/main
+      - ./service-comons/src/main:/workspace/service-comons/src/main
     environment:
+      <<: *devtools-env
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KEYCLOAK_BASE_URL: http://keycloak:8080
       KEYCLOAK_REALM: ecommerce
       KEYCLOAK_ADMIN_CLIENT_ID: identity-worker
-      KEYCLOAK_ADMIN_CLIENT_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
+      KEYCLOAK_ADMIN_CLIENT_SECRET: EN2o9JG2TFWL7HCBP3G1dYZQI9djP0Fp
     depends_on:
       - kafka
       - keycloak
@@ -105,10 +132,16 @@ services:
   api-gateway:
     build:
       context: .
-      dockerfile: api-gateway/Dockerfile
+      dockerfile: Dockerfile-dev
+      args:
+        SERVICE: api-gateway
+    volumes:
+      - ./api-gateway/src/main:/workspace/api-gateway/src/main
+      - ./service-comons/src/main:/workspace/service-comons/src/main
     ports:
       - "8080:8080"
     environment:
+      <<: *devtools-env
       SERVER_PORT: 8080
     depends_on:
       - catalog-service
@@ -132,12 +165,16 @@ services:
   catalog-service:
     build:
       context: .
-      dockerfile: catalog-service/Dockerfile-dev
+      dockerfile: Dockerfile-dev
+      args:
+        SERVICE: catalog-service
     volumes:
       - ./catalog-service/src/main:/workspace/catalog-service/src/main
+      - ./service-comons/src/main:/workspace/service-comons/src/main
     expose:
       - 8081
     environment:
+      <<: *devtools-env
       SERVER_PORT: 8081
       SPRING_DATASOURCE_URL: jdbc:postgresql://catalog-db:5432/ecommerce-catalog
       SPRING_DATASOURCE_USERNAME: postgres
@@ -164,13 +201,16 @@ services:
   customer-service:
     build:
       context: .
-      dockerfile: customer-service/Dockerfile-dev
+      dockerfile: Dockerfile-dev
+      args:
+        SERVICE: customer-service
     volumes:
       - ./customer-service/src/main:/workspace/customer-service/src/main
       - ./service-comons/src/main:/workspace/service-comons/src/main
     expose:
       - 8082
     environment:
+      <<: *devtools-env
       SERVER_PORT: 8082
       SPRING_DATASOURCE_URL: jdbc:postgresql://customer-db:5432/ecommerce-customer
       SPRING_DATASOURCE_USERNAME: postgres
@@ -184,9 +224,16 @@ services:
   discovery-server:
     build:
       context: .
-      dockerfile: discovery-server/Dockerfile
+      dockerfile: Dockerfile-dev
+      args:
+        SERVICE: discovery-server
+    volumes:
+      - ./discovery-server/src/main:/workspace/discovery-server/src/main
+      - ./service-comons/src/main:/workspace/service-comons/src/main
     expose:
       - 8761
+    environment:
+      <<: *devtools-env
 
 #networks:
 #  ecommerce-network:

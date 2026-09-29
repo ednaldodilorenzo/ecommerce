@@ -1,4 +1,4 @@
-package br.com.d2e.ecommerce.worker.identity.publisher;
+package br.com.d2s.ecommerce.commons.event;
 
 import java.util.UUID;
 
