@@ -39,6 +39,8 @@ public class CustomerRegistrationWorker {
                                 "123456", event.data().name(),
                                 event.data().name()));
 
-        eventPublisher.publish(new CustomerIdentityProvisioned(UUID.randomUUID(), event.data().customerId(), identityId));
+        eventPublisher.publish(
+                event.eventId(),
+                new CustomerIdentityProvisioned(event.data().customerId(), identityId));
     }
 }

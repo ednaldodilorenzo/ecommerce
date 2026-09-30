@@ -1,8 +1,6 @@
 package br.com.d2s.service.customer.service;
 
-import br.com.d2s.ecommerce.commons.event.CustomerRegistrationRequested;
-import br.com.d2s.ecommerce.commons.event.EcommerceEvent;
-import br.com.d2s.ecommerce.commons.event.EcommerceTopic;
+import br.com.d2s.ecommerce.commons.event.*;
 import br.com.d2s.ecommerce.commons.exception.APIException;
 import br.com.d2s.ecommerce.commons.exception.APIExceptionType;
 import br.com.d2s.service.customer.dao.CustomerDao;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Service;
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerDao customerDao;
     private final OutboxEventService outboxEventService;
-    private final KeycloakIdentityProvider keycloakIdentityProvider;
 
     @Override
     @Transactional
@@ -37,5 +34,16 @@ public class CustomerServiceImpl implements CustomerService {
         var customerCreatedEvent = new CustomerRegistrationRequested(user.getId(), user.getEmail(), user.getName());
 
         outboxEventService.addEvent(user.getId(), "Customer", EcommerceEvent.CUSTOMER_REGISTRATION_REQUESTED.getValue(), EcommerceTopic.CUSTOMER_REGISTRATION_REQUESTED, customerCreatedEvent);
+    }
+
+    @Override
+    @Transactional
+    public void addCustomerProvisionedIdentity(EventEnvelope<CustomerIdentityProvisioned> event) {
+        User user =
+                customerDao.findById(event.data().customerId()).orElseThrow(() -> new APIException(APIExceptionType.NOT_FOUND, "CUSTOMER_NOT_FOUND"));
+        user.setIdentity(event.data().identityId());
+        var customerIdentityRegistered =
+                new CustomerIdentityRegistered(event.data().identityId());
+        outboxEventService.addEvent(event.aggregateId(), "Customer", event.eventType(), EcommerceTopic.CUSTOMER_IDENTITY_REGISTERED, customerIdentityRegistered);
     }
 }

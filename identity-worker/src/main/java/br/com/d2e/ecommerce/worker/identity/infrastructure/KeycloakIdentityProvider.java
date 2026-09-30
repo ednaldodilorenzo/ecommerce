@@ -94,4 +94,18 @@ public class KeycloakIdentityProvider {
 
         return response.accessToken();
     }
+
+    public void sendPasswordSetupEmail(UUID identityId) {
+        restClient.put()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/admin/realms/{realm}/users/{userId}/execute-actions-email")
+                        .queryParam("lifespan", 3600)
+                        .build(properties.realm(), identityId)
+                )
+                .headers(headers -> headers.setBearerAuth(obtainAccessToken()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(List.of("UPDATE_PASSWORD"))
+                .retrieve()
+                .toBodilessEntity();
+    }
 }

@@ -6,4 +6,7 @@ public class EcommerceTopic {
 
     public static final String CUSTOMER_IDENTITY_PROVISIONING =
             "customer.identity.provisioning";
+
+    public static final String CUSTOMER_IDENTITY_REGISTERED =
+            "customer.identity.registered";
 }

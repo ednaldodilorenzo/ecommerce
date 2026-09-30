@@ -25,7 +25,6 @@ public class OutboxEventServiceImpl implements OutboxEventService {
         var envelope = new EventEnvelope<>(eventId, eventType, aggregateId, Instant.now(), data);
         try {
             var payload = objectMapper.writeValueAsString(envelope);
-            IO.println("Payload de saída: " + payload);
             var outboxEvent = new OutboxEvent(eventId, aggregateId, aggregateType, eventType, topic,
                     aggregateId.toString(), payload);
 

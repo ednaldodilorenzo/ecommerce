@@ -75,6 +75,12 @@ public class OutboxPublisher {
                     event.getEventType(),
                     event.getTopic()
             );
+            IO.println(
+                    "Outbox event published: eventId={}, eventType={}, topic={}" +
+                    event.getId() +
+                    event.getEventType() +
+                    event.getTopic()
+            );
         } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();
             //registerFailure(event, exception);
